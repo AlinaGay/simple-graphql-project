@@ -1,9 +1,10 @@
 import React from 'react';
 import { useLazyQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
+import * as UserDetailsTypes from '../types';
 
 import './form.css';
-
+import { RouteComponentProps } from '@reach/router';
 
 const GET_NAME= gql`
     query  {
@@ -32,17 +33,19 @@ const GET_SURNAME= gql`
     }
 `;
 
-function Form () {
+interface LaunchesProps extends RouteComponentProps {}
 
-    const [getName, { data: nameData, loading: nameLoading, error: nameError }] = useLazyQuery(
+const Form: React.FC<LaunchesProps> = () => {
+
+    const [getName, { data: nameData, loading: nameLoading, error: nameError }] = useLazyQuery<UserDetailsTypes.UserDetails,UserDetailsTypes.UserDetails_user>(
         GET_NAME
     );
 
-    const [getPatronymic, { data: patronymicData, loading: patronymicLoading, error: patronymicError }] = useLazyQuery(
+    const [getPatronymic, { data: patronymicData, loading: patronymicLoading, error: patronymicError }] = useLazyQuery<UserDetailsTypes.UserDetails,UserDetailsTypes.UserDetails_user>(
         GET_PATRONYMIC
     );
 
-    const [getSurname, { data: surnameData, loading: surnameLoading, error: surnameError }] = useLazyQuery(
+    const [getSurname, { data: surnameData, loading: surnameLoading, error: surnameError }] = useLazyQuery<UserDetailsTypes.UserDetails,UserDetailsTypes.UserDetails_user>(
         GET_SURNAME
     );
 
@@ -70,18 +73,19 @@ function Form () {
     }    
 
     const handleClick = () => {
-        if(!nameData||!patronymicData||!surnameData||
-           !nameData.me||!patronymicData.me||!surnameData.me||
-           !nameData.me.name||!patronymicData.me.patronymic||!surnameData.me.surname){textInput.current!.value='Please, wait...'}
-        if(nameLoading||patronymicLoading||surnameLoading){textInput.current!.value='Loading data...'}
-        if(nameError||patronymicError||surnameError){textInput.current!.value='Oops, error...'}
+        if(!nameData||!patronymicData||!surnameData){if(textInput&&textInput.current){textInput.current.value='Please, wait...'}}
+        if(nameLoading||patronymicLoading||surnameLoading){if(textInput&&textInput.current){textInput.current.value='Loading data...'}}
+        if(nameError||patronymicError||surnameError){if(textInput&&textInput.current){textInput.current.value='Oops, error...'}}
 
-        const name = checkboxName.current && checkboxName.current.checked ? nameData.me.name : '';
-        const patronymic = checkboxPatronymic.current && checkboxPatronymic.current.checked ? patronymicData.me.patronymic : '';
-        const surname = checkboxSurname.current && checkboxSurname.current.checked ? surnameData.me.surname : '';
+        const name = checkboxName.current && checkboxName.current.checked && nameData && nameData.me ? nameData.me.name : '';
+        const patronymic = checkboxPatronymic.current && checkboxPatronymic.current.checked  && patronymicData && patronymicData.me ? patronymicData.me.patronymic : '';
+        const surname = checkboxSurname.current && checkboxSurname.current.checked && surnameData ? surnameData.me.surname : '';
         const resultInput = name+' '+patronymic+' '+surname;
-        
-        return textInput.current!.value=resultInput;
+
+        if(textInput&&textInput.current){
+            textInput.current.value=resultInput
+        }
+        return null;
     } 
         
     return (
