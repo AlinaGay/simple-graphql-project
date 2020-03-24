@@ -1,5 +1,5 @@
-import React, { createRef, useState } from 'react';
-import { useQuery, useLazyQuery } from '@apollo/react-hooks';
+import React from 'react';
+import { useLazyQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 
 import './form.css';
@@ -34,15 +34,15 @@ const GET_SURNAME= gql`
 
 function Form () {
 
-    const [getName, { data: nameData }] = useLazyQuery(
+    const [getName, { data: nameData, loading: nameLoading, error: nameError }] = useLazyQuery(
         GET_NAME
     );
 
-    const [getPatronymic, { data: patronymicData }] = useLazyQuery(
+    const [getPatronymic, { data: patronymicData, loading: patronymicLoading, error: patronymicError }] = useLazyQuery(
         GET_PATRONYMIC
     );
 
-    const [getSurname, { data: surnameData }] = useLazyQuery(
+    const [getSurname, { data: surnameData, loading: surnameLoading, error: surnameError }] = useLazyQuery(
         GET_SURNAME
     );
 
@@ -51,12 +51,37 @@ function Form () {
     const checkboxSurname = React.useRef<HTMLInputElement>(null);
     const textInput = React.useRef<HTMLInputElement>(null);
 
-    const handleClick = () => {
+    const handleNameClick = () => {
         if(checkboxName.current && checkboxName.current.checked){getName()};
+
+        return null;
+    }
+
+    const handlePatronymicClick = () => {
         if(checkboxPatronymic.current && checkboxPatronymic.current.checked){getPatronymic()};
+
+        return null;
+    }
+
+    const handleSurnameClick = () => {
         if(checkboxSurname.current && checkboxSurname.current.checked){getSurname()};
 
         return null;
+    }    
+
+    const handleClick = () => {
+        if(!nameData||!patronymicData||!surnameData||
+           !nameData.me||!patronymicData.me||!surnameData.me||
+           !nameData.me.name||!patronymicData.me.patronymic||!surnameData.me.surname){textInput.current!.value='Please, wait...'}
+        if(nameLoading||patronymicLoading||surnameLoading){textInput.current!.value='Loading data...'}
+        if(nameError||patronymicError||surnameError){textInput.current!.value='Oops, error...'}
+
+        const name = checkboxName.current && checkboxName.current.checked ? nameData.me.name : '';
+        const patronymic = checkboxPatronymic.current && checkboxPatronymic.current.checked ? patronymicData.me.patronymic : '';
+        const surname = checkboxSurname.current && checkboxSurname.current.checked ? surnameData.me.surname : '';
+        const resultInput = name+' '+patronymic+' '+surname;
+        
+        return textInput.current!.value=resultInput;
     } 
         
     return (
@@ -66,6 +91,7 @@ function Form () {
                 <input
                     type="checkbox"
                     ref={checkboxName}
+                    onClick={handleNameClick}
                 />
                 Имя
             </label>
@@ -73,6 +99,7 @@ function Form () {
                 <input
                     type="checkbox"
                     ref={checkboxPatronymic}
+                    onClick={handlePatronymicClick}
                 />
                 Отчество
             </label>
@@ -80,6 +107,7 @@ function Form () {
                 <input
                     type="checkbox"
                     ref={checkboxSurname}
+                    onClick={handleSurnameClick}
                 />
                 Фамилия
             </label>

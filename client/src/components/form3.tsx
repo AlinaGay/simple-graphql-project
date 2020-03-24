@@ -34,39 +34,31 @@ const GET_SURNAME= gql`
 
 function Form () {
 
-    const { data: nameData, loading: nameLoading, error: nameError } = useQuery(
-        GET_NAME
-    );
+    const useQueryParam = (url: any) => {
+        
+        
+        const { data: resultData, loading: nameLoading, error: nameError } = useQuery(
+            url
+        );  
 
-    const { data: patronymicData, loading: patronymicLoading, error: patronymicError } = useQuery(
-        GET_PATRONYMIC
-    );
+        return resultData;
+    }
 
-    const { data: surnameData, loading: surnameLoading, error: surnameError } = useQuery(
-        GET_SURNAME
-    );
-    
     const checkboxName = React.useRef<HTMLInputElement>(null);
     const checkboxPatronymic = React.useRef<HTMLInputElement>(null);
     const checkboxSurname = React.useRef<HTMLInputElement>(null);
     const textInput = React.useRef<HTMLInputElement>(null)
 
     const handleClick = () => {
-        const name = checkboxName.current && checkboxName.current.checked ? nameData.me.name:'';
-        const patronymic = checkboxPatronymic.current && checkboxPatronymic.current.checked ? patronymicData.me.patronymic : '';
-        const surname = checkboxSurname.current && checkboxSurname.current.checked ? surnameData.me.surname : '';
+        
+        const name = checkboxName.current && checkboxName.current.checked ? useQueryParam(GET_NAME).me.name:'';
+        const patronymic = checkboxPatronymic.current && checkboxPatronymic.current.checked ? useQueryParam(GET_PATRONYMIC).me.patronymic : '';
+        const surname = checkboxSurname.current && checkboxSurname.current.checked ? useQueryParam(GET_SURNAME).me.surname : '';
     
         const resultInput = name+' '+patronymic+' '+surname;
 
         return textInput.current!.value=resultInput;
-    }
-
-    if (nameLoading||patronymicLoading||surnameLoading) return <p>Loading data...</p>;
-    if (nameError||patronymicError||surnameError) return (
-        <React.Fragment>
-            <p>Oops, error! </p> 
-        </React.Fragment>
-    );    
+    }    
         
     return (
     <fieldset>
