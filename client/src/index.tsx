@@ -4,7 +4,7 @@ import { HttpLink } from 'apollo-link-http';
 import { ApolloProvider, useQuery } from '@apollo/react-hooks';
 import React from 'react';
 import ReactDOM from 'react-dom'; 
-import Form from './components/form';
+import Form from './components/form2';
 
 const cache = new InMemoryCache();
 const link = new HttpLink({
