@@ -1,73 +1,54 @@
-import React, { createRef } from 'react';
-import { useQuery } from '@apollo/react-hooks';
+import React, { useEffect } from 'react';
 import gql from 'graphql-tag';
+import { useLazyQuery } from '@apollo/react-hooks';
+import { RouteComponentProps } from '@reach/router';
+import * as UserDetailsTypes from '../types';
 
 import './form.css';
 
+const generateQuery = (checkboxNameChecked: boolean, checkboxPatronymicChecked: boolean, checkboxSurnameChecked: boolean) => 
+    `query { me { id ${checkboxNameChecked ? 'name ' : ''}` +
+    `${checkboxPatronymicChecked ? 'patronymic ' : ''}` +
+    `${checkboxSurnameChecked ? 'surname' : ''} }}`;
 
-const GET_NAME= gql`
-    query  {
-        me {
-            id
-            name
-        }
-    }
-`;
+interface LaunchesProps extends RouteComponentProps {}
 
-const GET_PATRONYMIC= gql`
-    query  {
-        me {
-            id
-            patronymic
-        }
-    }
-`;
+const Form: React.FC<LaunchesProps> = () => {
 
-const GET_SURNAME= gql`
-    query  {
-        me {
-            id
-            surname
-        }
-    }
-`;
-
-function Form () {
-
-    const { data: nameData, loading: nameLoading, error: nameError } = useQuery(
-        GET_NAME
-    );
-
-    const { data: patronymicData, loading: patronymicLoading, error: patronymicError } = useQuery(
-        GET_PATRONYMIC
-    );
-
-    const { data: surnameData, loading: surnameLoading, error: surnameError } = useQuery(
-        GET_SURNAME
-    );
-    
     const checkboxName = React.useRef<HTMLInputElement>(null);
     const checkboxPatronymic = React.useRef<HTMLInputElement>(null);
     const checkboxSurname = React.useRef<HTMLInputElement>(null);
-    const textInput = React.useRef<HTMLInputElement>(null)
-
-    const handleClick = () => {
-        const name = checkboxName.current && checkboxName.current.checked ? nameData.me.name:'';
-        const patronymic = checkboxPatronymic.current && checkboxPatronymic.current.checked ? patronymicData.me.patronymic : '';
-        const surname = checkboxSurname.current && checkboxSurname.current.checked ? surnameData.me.surname : '';
+    const textInput = React.useRef<HTMLInputElement>(null);
     
-        const resultInput = name+' '+patronymic+' '+surname;
+    const customStringQuery = generateQuery(checkboxName.current && checkboxName.current.checked ? true: false,
+        checkboxPatronymic.current && checkboxPatronymic.current.checked ? true: false,
+        checkboxSurname.current && checkboxSurname.current.checked ? true: false);
 
-        return textInput.current!.value=resultInput;
-    }
+    const GET_USER = gql([customStringQuery]);
 
-    if (nameLoading||patronymicLoading||surnameLoading) return <p>Loading data...</p>;
-    if (nameError||patronymicError||surnameError) return (
-        <React.Fragment>
-            <p>Oops, error! </p> 
-        </React.Fragment>
-    );    
+    const [getUser, { data, loading, error }] = useLazyQuery<UserDetailsTypes.UserDetails,UserDetailsTypes.UserDetails_user>(
+        GET_USER,
+        { fetchPolicy: "no-cache" }
+    );
+
+    const getData = () => {
+    
+        var res = ``;
+        if(data && data.me && data.me.name){res+=`${data.me.name} `}
+        if(data && data.me && data.me.patronymic){res+=`${data.me.patronymic} `}
+        if(data && data.me && data.me.surname){res+=`${data.me.surname}`}
+        if(loading) return `Идет загрузка данных`
+        if(error) return `Ошибка данных`
+
+        return res;
+    };
+
+    useEffect(() => {
+        textInput.current!.value = getData();
+    })
         
+    
+
     return (
     <fieldset>
         <legend>Выбери поле</legend>
@@ -92,7 +73,7 @@ function Form () {
                 />
                 Фамилия
             </label>
-            <button onClick={handleClick}>Показать</button>
+            <button onClick={()=>getUser()}>Показать</button>
             <input
                 type="text"
                 ref={textInput}
