@@ -5,55 +5,26 @@ import {UserDetails, Variables} from '../types';
 
 import './user.css';
 
-const GET_USER= gql`
-    query  {
-        me {
-            id
-            name
-        }
-    }
-`;
+function User(props: any) { 
 
-function User() { 
+    const textInput = React.createRef<HTMLInputElement>();
 
-    const func = () => {
-        alert('1');
-    }
     return (
         <Query<UserDetails, Variables>
-            query={GET_USER}
+            query={props.query}
         >
             {({ loading, error, data }) => { 
+                if(data && data.me && data.me.name){textInput.current!.value+=`${data.me.name} `}
+                if(data && data.me && data.me.patronymic){textInput.current!.value+=`${data.me.patronymic} `}
+                if(data && data.me && data.me.surname){textInput.current!.value+=`${data.me.surname}`}
                 if (loading) return <div>"Loading..."</div>;
                 if (error) return <div>`Error!`</div>;
 
                 return (
-                    <fieldset>
-                    <legend>Выбери поле</legend>
-                    <label>
-                        <input
-                            type="checkbox"
-                        />
-                        Имя
-                    </label>
-                    <label>
-                        <input
-                            type="checkbox"
-                        />
-                        Отчество
-                    </label>
-                    <label>
-                        <input
-                            type="checkbox"
-                        />
-                        Фамилия
-                    </label>
-                    <button onClick={func}>Показать</button>
                     <input
                         type="text"
-                        value={data!.me.name}
+                        ref={textInput}
                     />
-                </fieldset>
                 );
             }}
         </Query>
