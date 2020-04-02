@@ -1,24 +1,20 @@
-import { ApolloClient } from 'apollo-client';
-import { InMemoryCache, NormalizedCacheObject } from 'apollo-cache-inmemory';
-import { HttpLink } from 'apollo-link-http';
-import { ApolloProvider } from '@apollo/react-hooks';
+import { ApolloProvider } from 'react-apollo';
 import React from 'react';
 import ReactDOM from 'react-dom'; 
-import Form from './components/form1';
+import { ApolloProvider as ApolloHooksProvider } from "react-apollo-hooks";
+import User from './components/user';
+import createClient from './apolloClient';
 
-const cache = new InMemoryCache();
-const link = new HttpLink({
-  uri: 'http://localhost:4000/'
-});
+const client = createClient();
 
-const client: ApolloClient<NormalizedCacheObject> = new ApolloClient({
-  cache,
-  link,
-});
+function App() {
+    return (
+    <ApolloProvider client={client}>
+      <ApolloHooksProvider client={client}>
+        <User />
+      </ApolloHooksProvider>
+    </ApolloProvider>
+    );
+  }
 
-ReactDOM.render(
-  <ApolloProvider client={client}>
-    <Form />
-  </ApolloProvider>, 
-  document.getElementById('root')
-);
+ReactDOM.render(<App />, document.getElementById("root"));

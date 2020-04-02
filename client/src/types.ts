@@ -9,3 +9,7 @@ export interface UserDetails_user {
   export interface UserDetails {
     me: UserDetails_user;
   }
+
+  export interface Variables {
+    first: number;
+  };
