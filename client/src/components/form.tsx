@@ -13,7 +13,7 @@ type State = {
 export class Form extends PureComponent {
 
     state: State = {
-        textQuery: ''
+        textQuery: `query { me { id  }}`
     };
 
     generateQuery = (checkboxNameChecked: boolean, checkboxPatronymicChecked: boolean, checkboxSurnameChecked: boolean) => 
@@ -31,9 +31,16 @@ export class Form extends PureComponent {
             this.checkboxSurname.current && this.checkboxSurname.current.checked ? true: false);
 
         
-        this.setState({textQuery: customStringQuery})
+        this.setState({textQuery: customStringQuery});
+
+        console.log(this.state.textQuery);
     }
-    
+
+    componentDidMount(){
+        this.handleClick();
+        console.log('yes');
+    }
+
     render(){
         
         const { textQuery} = this.state;

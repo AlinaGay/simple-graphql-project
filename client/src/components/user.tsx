@@ -14,16 +14,17 @@ function User(props: any) {
             query={props.query}
         >
             {({ loading, error, data }) => { 
-                if(data && data.me && data.me.name){textInput.current!.value+=`${data.me.name} `}
-                if(data && data.me && data.me.patronymic){textInput.current!.value+=`${data.me.patronymic} `}
-                if(data && data.me && data.me.surname){textInput.current!.value+=`${data.me.surname}`}
+                let res = '';
+                if(data && data.me && data.me.name){res+=`${data.me.name} `}
+                if(data && data.me && data.me.patronymic){res+=`${data.me.patronymic} `}
+                if(data && data.me && data.me.surname){res+=`${data.me.surname}`}
                 if (loading) return <div>"Loading..."</div>;
                 if (error) return <div>`Error!`</div>;
-
+                
                 return (
                     <input
                         type="text"
-                        ref={textInput}
+                        value={res}
                     />
                 );
             }}
