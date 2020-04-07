@@ -1,0 +1,16 @@
+  
+  fieldset {
+    background: white;
+    border: 1px solid black;
+    display: flex;
+    margin: 20px 20px;
+    font-size: 16px;
+  }
+  
+  legend {
+    padding: 10px;
+    background: white;
+    color: black;
+    border: 1px solid black;
+    font-size: 16px;
+  }

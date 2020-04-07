@@ -1,27 +1,15 @@
-  
-  fieldset {
-    background: white;
-    border: 1px solid black;
+div {
     display: flex;
-    margin: 20px 20px;
-    font-size: 16px;
-  }
-  
-  legend {
-    padding: 10px;
-    background: white;
-    color: black;
-    border: 1px solid black;
-    font-size: 16px;
-  }
+    flex-direction: column;
 
-  button {
+}
+button {
     width: 100px;
     margin-top: 15px;
     font-size: 14px;
   }
 
-  #text {
+  .text-input {
     width: 200px;
     margin-top: 15px;
     font-size: 16px;
